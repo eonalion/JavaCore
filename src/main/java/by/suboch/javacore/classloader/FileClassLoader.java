@@ -9,6 +9,9 @@ import java.nio.file.Paths;
  */
 public class FileClassLoader extends ClassLoader {
     private static final String CLASS_EXTENSION = ".class";
+    private static final String PACKAGE_SEPARATOR = ".";
+    private static final String FILE_SEPARATOR = "/";
+
     private String path;
 
 
@@ -24,7 +27,7 @@ public class FileClassLoader extends ClassLoader {
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         try {
-            byte[] bytes = fetchBytes(name + CLASS_EXTENSION);
+            byte[] bytes = fetchBytes(name);
             return super.defineClass(name, bytes, 0, bytes.length);
         } catch (IOException e) {
             return super.findClass(name);
@@ -32,6 +35,6 @@ public class FileClassLoader extends ClassLoader {
     }
 
     private byte[] fetchBytes(String fileName) throws IOException {
-        return Files.readAllBytes(Paths.get(path, fileName));
+        return Files.readAllBytes(Paths.get(path, fileName.replace(PACKAGE_SEPARATOR, FILE_SEPARATOR) + CLASS_EXTENSION));
     }
 }
